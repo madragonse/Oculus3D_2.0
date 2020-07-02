@@ -74,6 +74,7 @@ class Oculus3D
 private:
 	sf::RenderWindow *window;
 	sf::ConvexShape temPolygon;
+	sf::Vertex temLine[2];
 
 	controlPoints temCp;
 	controlPoints cp;
@@ -852,6 +853,10 @@ public:
 
 			for (auto& t : linesToDraw)
 			{
+
+				temLine[0] = sf::Vertex(sf::Vector2f(t.p[0].x, t.p[0].y));
+				temLine[1] = sf::Vertex(sf::Vector2f(t.p[1].x, t.p[1].y));
+				window->draw(temLine, 2, sf::Lines);
 				// !!!
 				//DrawLine(t.p[0].x, t.p[0].y, t.p[1].x, t.p[1].y, PIXEL_SOLID, FG_GREEN);
 			}
