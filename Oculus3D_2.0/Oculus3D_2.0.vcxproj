@@ -145,6 +145,7 @@
     <ClCompile Include="Oculus3D_2.0.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="X3dSaver.h" />
     <ClInclude Include="nurbs_v2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

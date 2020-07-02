@@ -164,10 +164,11 @@ private:
 	int wx, wy;
 	int resolution;
 	std::vector<vec3d> bezier1[4];
-	std::vector<std::vector<vec3d>> bezier2P;
+	
 
 public:
 	std::vector<line> lines;
+	std::vector<std::vector<vec3d>> bezier2P;
 	mesh surface1;
 
 public:

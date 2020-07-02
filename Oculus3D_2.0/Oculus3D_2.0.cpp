@@ -8,12 +8,13 @@
 #include <string>
 #include <sstream> 
 #include "nurbs_v2.h"
+#include "X3dSaver.h"
 #include <ctime>
 
 using namespace std;
 
-#define windowX 800
-#define windowY 600
+#define windowX 1600
+#define windowY 900
 
 void save(controlPoints s)
 {
@@ -88,6 +89,9 @@ private:
 	vec3d vLookDir;	// Direction vector along the direction camera points
 	float fYaw;
 	float xr = 0, yr = 0, zr = 0;	// Spins World transform
+
+	std::vector<std::vector<float>> transfusionToX3d;
+	std::vector<float> temToX3d;
 
 	vec3d Matrix_MultiplyVector(mat4x4& m, vec3d& i)
 	{
@@ -286,7 +290,6 @@ public:
 
 			Sleep(40);
 			window->clear();
-			std::cout << clock() - timer << std::endl;
 			OnUserUpdate((clock() - timer)/1000.0f);
 			timer = clock();
 			window->display();
@@ -311,6 +314,13 @@ public:
 		zoom = 3.0;
 
 		temPolygon = sf::ConvexShape(3);
+		
+
+		/*std::vector<std::vector<float>> temTest =
+		{ { 0, 0, 0, 0, 1 ,0, 0, 2, 0, 0, 3, 0, 0, 4, 0 },
+		{	1, 0, 0, 1, 1, 0, 1, 2, 2, 1, 3 ,3 ,1 ,4, 2},
+		{2, 0, 0, 2, 1, 0, 2, 2, 0, 2, 3, 0, 2, 4, 0 }};
+		saveToX3d(temTest);*/
 
 		return true;
 	}
@@ -340,9 +350,9 @@ public:
 
 		float movement = 1.0f * fElapsedTime;
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::F12))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract))
 			zoom -= movement;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::F11))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add))
 			zoom += movement;
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
@@ -480,14 +490,46 @@ public:
 										cp2 = temCp;
 									}
 									else
-									{
-										timeChangeBuffer += fElapsedTime;
-										if (timeChangeBuffer > 0.4)
+										if ((sf::Keyboard::isKeyPressed(sf::Keyboard::F6)) && change == 0)
 										{
-											change = 0;
-											timeChangeBuffer = 0;
+
+											for (auto i : cp.bezier2P)
+											{
+												for (auto j : i)
+												{
+													temToX3d.push_back(j.x);
+													temToX3d.push_back(j.y);
+													temToX3d.push_back(j.z);
+													
+												}
+												transfusionToX3d.push_back(temToX3d);
+												temToX3d.clear();
+											}
+
+											for (auto i : cp2.bezier2P)
+											{
+												for (auto j : i)
+												{
+													temToX3d.push_back(j.x);
+													temToX3d.push_back(j.y);
+													temToX3d.push_back(j.z);
+
+												}
+												transfusionToX3d.push_back(temToX3d);
+												temToX3d.clear();
+											}
+										
+											saveToX3d (transfusionToX3d);
 										}
-									}
+										else
+										{
+											timeChangeBuffer += fElapsedTime;
+											if (timeChangeBuffer > 0.4)
+											{
+												change = 0;
+												timeChangeBuffer = 0;
+											}
+										}
 
 		cp.draw(l, c, b1, b2);
 
@@ -623,7 +665,8 @@ public:
 				temPolygon.setPoint(1, sf::Vector2f(t.p[1].x, t.p[1].y));
 				temPolygon.setPoint(2, sf::Vector2f(t.p[2].x, t.p[2].y));
 
-				temPolygon.setOutlineColor(sf::Color(255 * t.dp, 255 * t.dp, 255 * t.dp));
+				temPolygon.setFillColor(sf::Color(255 * t.dp, 255 * t.dp, 255 * t.dp));
+
 
 				window->draw(temPolygon);
 
@@ -737,7 +780,7 @@ public:
 				temPolygon.setPoint(1, sf::Vector2f(t.p[1].x, t.p[1].y));
 				temPolygon.setPoint(2, sf::Vector2f(t.p[2].x, t.p[2].y));
 
-				temPolygon.setOutlineColor(sf::Color(255 * t.dp, 255 * t.dp, 255 * t.dp));
+				temPolygon.setFillColor(sf::Color(255 * t.dp, 255 * t.dp, 255 * t.dp));
 
 				window->draw(temPolygon);
 

@@ -1,0 +1,57 @@
+<html> 
+    <head> 
+        <title>Oculus3D</title> 			
+        <script type='text/javascript' src='http://www.x3dom.org/download/x3dom.js'> </script> 
+        <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/x3dom.css'></link> 
+        <style>
+            x3d
+            {
+                border:2px solid darkorange;
+				background: rgba(128, 128, 128, 0.4);
+				 
+            }
+			body
+			{     
+				font-size:110%;
+				font-family:verdana, sans-serif;
+				background-image: url('pattern.png');
+				margin: 3em;
+				color: lightgray;
+			}
+			
+			h1
+			{
+				color: darkorange;
+			}
+        </style>
+    </head> 
+    <body> 
+        <h1>Oculus3D: Wyświetlanie soczewki</h1> 
+        <p> 
+            Wyświetlanie wygenerowanej soczewki. 
+        </p>
+		 
+        <?xml version="1.0" encoding="UTF-8"?>
+<X3D>
+	<Scene>
+            <Shape>
+               <Appearance>
+                  <Material diffuseColor='1.0 0 0.0'></Material>
+               </Appearance>
+			   
+				<IndexedTriangleStripSet ccw='true' colorPerVertex='true' index='
+
+				' normalPerVertex='true' solid='false' containerField='geometry'>
+				<Coordinate point='
+
+				'/>
+				</IndexedTriangleStripSet>
+            </Shape>
+	</Scene>
+</X3D> 
+
+    </body> 
+    </html>  
+	
+
+ 
