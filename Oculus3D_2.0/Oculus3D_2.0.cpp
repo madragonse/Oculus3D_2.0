@@ -81,6 +81,7 @@ private:
 	controlPoints cp2;
 	bool l, c, b1, b2, s, change, ud;
 	long long timer;
+	long long counter;
 	float timeChangeBuffer;
 	float zoom;
 
@@ -271,11 +272,12 @@ private:
 public:
 	int Start()
 	{
+		long long lastTimer = 0;
 
 		if (!OnUserCreate())
 			return 0;
 
-
+		counter = 0;
 		while (window->isOpen())
 		{
 			
@@ -285,13 +287,18 @@ public:
 				if (event.type == sf::Event::Closed)
 					window->close();
 			}
-			
 
-			
-
-			Sleep(40);
 			window->clear();
-			OnUserUpdate((clock() - timer)/1000.0f);
+			OnUserUpdate((lastTimer)/1000.0f);
+			counter++;
+			if (counter > 10)
+			{
+				counter = 0;
+				system("cls");
+				std::cout << "Fps: " << 1000 / (clock() - timer) << std::endl;
+				std::cout << "Resolution: " << cp.resolution << "\n";
+			}
+			lastTimer = (clock() - timer);
 			timer = clock();
 			window->display();
 		}
@@ -316,12 +323,6 @@ public:
 
 		temPolygon = sf::ConvexShape(3);
 		
-
-		/*std::vector<std::vector<float>> temTest =
-		{ { 0, 0, 0, 0, 1 ,0, 0, 2, 0, 0, 3, 0, 0, 4, 0 },
-		{	1, 0, 0, 1, 1, 0, 1, 2, 2, 1, 3 ,3 ,1 ,4, 2},
-		{2, 0, 0, 2, 1, 0, 2, 2, 0, 2, 3, 0, 2, 4, 0 }};
-		saveToX3d(temTest);*/
 
 		return true;
 	}
@@ -352,9 +353,9 @@ public:
 		float movement = 1.0f * fElapsedTime;
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract))
-			zoom -= movement;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add))
 			zoom += movement;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add))
+			zoom -= movement;
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 			xr += 1.0f * fElapsedTime;
@@ -494,7 +495,7 @@ public:
 										if ((sf::Keyboard::isKeyPressed(sf::Keyboard::F6)) && change == 0)
 										{
 
-											for (auto i : cp.bezier2P)
+											for (auto i : bezier2P)
 											{
 												for (auto j : i)
 												{
@@ -507,7 +508,7 @@ public:
 												temToX3d.clear();
 											}
 
-											for (auto i : cp2.bezier2P)
+											for (auto i : bezier2P)
 											{
 												for (auto j : i)
 												{
@@ -802,7 +803,7 @@ public:
 
 
 
-			lineShape = cp.lines;
+			lineShape = lines;
 
 			for (auto lin : lineShape)
 			{
@@ -857,8 +858,6 @@ public:
 				temLine[0] = sf::Vertex(sf::Vector2f(t.p[0].x, t.p[0].y));
 				temLine[1] = sf::Vertex(sf::Vector2f(t.p[1].x, t.p[1].y));
 				window->draw(temLine, 2, sf::Lines);
-				// !!!
-				//DrawLine(t.p[0].x, t.p[0].y, t.p[1].x, t.p[1].y, PIXEL_SOLID, FG_GREEN);
 			}
 		}
 		return true;

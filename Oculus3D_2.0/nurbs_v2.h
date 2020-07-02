@@ -1,5 +1,8 @@
 #pragma once
 #include <fstream>
+#include <thread>
+#include <mutex>
+
 
 
 template <typename T>
@@ -11,6 +14,8 @@ std::vector<T> operator+(const std::vector<T>& A, const std::vector<T>& B)
 	AB.insert(AB.end(), B.begin(), B.end());
 	return AB;
 }
+
+
 
 struct vec3d
 {
@@ -156,19 +161,48 @@ std::vector<vec3d> bezier(int s, vec3d a, vec3d b, vec3d c, vec3d d)
 	return points;
 }
 
+std::vector<line> lines;
+std::vector<vec3d> bezier1[4];
+std::vector<std::vector<vec3d>> bezier2P;
+
+void bezier2Thread(int left, int right, bool draww, int resolution)
+{
+	std::vector<vec3d> pointsTem;
+	line lineTem;
+	for (int b = left; b < right; b++)
+	{
+
+		pointsTem = bezier(resolution, bezier1[0][b], bezier1[1][b], bezier1[2][b], bezier1[3][b]);
+
+		bezier2P[b] = pointsTem;
+
+		if (0)
+			for (int i = 1; i < pointsTem.size(); i++)
+			{
+				lineTem.p[0] = pointsTem[i - 1];
+				lineTem.p[1] = pointsTem[i];
+				lines.push_back(lineTem);
+			}
+
+	}
+}
+
 class controlPoints
 {
+
 public:
-	vec3d points[4][4];
-private:
-	int wx, wy;
-	int resolution;
-	std::vector<vec3d> bezier1[4];
 	
 
 public:
-	std::vector<line> lines;
-	std::vector<std::vector<vec3d>> bezier2P;
+	vec3d points[4][4];
+	int resolution;
+
+private:
+	int wx, wy;
+	
+	
+
+public:
 	mesh surface1;
 
 public:
@@ -199,8 +233,7 @@ public:
 public:
 	void draw(bool helpLines, bool choesen, bool bezier1, bool bezier2)
 	{
-		std::vector<line> linesTem;
-		lines = linesTem;
+		lines.clear();
 
 
 		if (helpLines)
@@ -241,6 +274,7 @@ public:
 
 	void generateBezier1(bool draw)
 	{
+		
 		std::vector<vec3d> pointsTem;
 		line lineTem;
 
@@ -259,18 +293,32 @@ public:
 		}
 	}
 
-	void generateBezier2(bool draw)
+	
+
+	void generateBezier2(bool draww)
 	{
-		std::vector<vec3d> pointsTem;
-		line lineTem;
-		std::vector<std::vector<vec3d>> emp;
+		std::vector<std::vector<vec3d>> emp(bezier1[0].size());
 		bezier2P = emp;
+
+		std::thread t1 = std::thread(bezier2Thread, 0, bezier1[0].size()/4, draww, resolution);
+		std::thread t2 = std::thread(bezier2Thread, bezier1[0].size() / 4, bezier1[0].size() * 2/4, draww, resolution);
+		std::thread t3 = std::thread(bezier2Thread, bezier1[0].size() * 2 / 4, bezier1[0].size() * 3 / 4, draww, resolution);
+		std::thread t4 = std::thread(bezier2Thread, bezier1[0].size() * 3 / 4, bezier1[0].size(), draww, resolution);
+
+
+		t1.join();
+		t2.join();
+		t3.join();
+		t4.join();
+
+		/*std::vector<vec3d> pointsTem;
+		line lineTem;
 		for (int b = 0; b < bezier1[0].size(); b++)
 		{
 
 			pointsTem = bezier(resolution, bezier1[0][b], bezier1[1][b], bezier1[2][b], bezier1[3][b]);
 
-			bezier2P.push_back(pointsTem);
+			bezier2P[b] = pointsTem;
 
 			if (draw)
 				for (int i = 1; i < pointsTem.size(); i++)
@@ -280,7 +328,7 @@ public:
 					lines.push_back(lineTem);
 				}
 
-		}
+		}*/
 	}
 
 	void setResolution(int r)
